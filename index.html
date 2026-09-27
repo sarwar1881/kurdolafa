@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kurdo Lafa — POS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0a0a0a;
+      --black-soft: #141414;
+      --black-elevated: #1c1c1c;
+      --white: #ffffff;
+      --white-soft: #f5f5f5;
+      --gray-100: #e8e8e8;
+      --gray-200: #d0d0d0;
+      --gray-300: #a3a3a3;
+      --gray-400: #737373;
+      --gray-500: #525252;
+      --gold: #c9a84c;
+      --gold-light: #e8d5a8;
+      --gold-dark: #9d7f2e;
+      --success: #2e7d32;
+      --error: #c62828;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --black: #ffffff;
+        --black-soft: #f5f5f5;
+        --black-elevated: #e8e8e8;
+        --white: #0a0a0a;
+        --white-soft: #141414;
+        --gray-100: #1c1c1c;
+        --gray-200: #2a2a2a;
+        --gray-300: #525252;
+        --gray-400: #737373;
+        --gray-500: #a3a3a3;
+      }
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--white-soft);
+      color: var(--black);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Header */
+    header {
+      background: var(--black);
+      color: var(--white);
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--gray-200);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-mark { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+    .logo-mark svg { width: 100%; height: 100%; }
+
+    /* Header view toggle */
+    .view-toggle {
+      display: flex;
+      gap: 0.25rem;
+      background: var(--black-elevated);
+      border: 1px solid var(--gray-500);
+      border-radius: 2px;
+      padding: 0.25rem;
+    }
+    .view-toggle button {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.4rem 0.9rem;
+      background: transparent;
+      border: none;
+      color: var(--gray-300);
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.2s ease;
+    }
+    .view-toggle button.active { background: var(--gold); color: var(--black); }
+
+    .cart-summary { display: flex; align-items: center; gap: 1rem; }
+    .cart-count {
+      font-size: 0.75rem; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--gray-400);
+    }
+    .cart-count strong { color: var(--white); font-size: 0.875rem; }
+    .cart-subtotal {
+      font-family: 'Playfair Display', serif; font-size: 1.125rem;
+      font-weight: 500; color: var(--gold);
+    }
+
+    /* Main Layout */
+    main {
+      flex: 1; display: grid; grid-template-columns: 1fr 440px;
+      gap: 1.5rem; padding: 1.5rem 2rem; max-width: 1600px;
+      width: 100%; margin: 0 auto;
+    }
+    main.reports-active { grid-template-columns: 1fr; }
+
+    /* Search */
+    .toolbar { margin-bottom: 1.25rem; }
+    .search-box {
+      width: 100%; padding: 0.875rem 1rem; background: var(--white);
+      border: 1px solid var(--gray-200); font-family: 'DM Sans', sans-serif;
+      font-size: 1rem; color: var(--black); transition: border-color 0.2s ease;
+    }
+    .search-box:focus { outline: none; border-color: var(--gold); }
+    .search-box::placeholder { color: var(--gray-400); }
+
+    /* Category Navigation */
+    .category-nav {
+      display: flex; gap: 0.5rem; margin-bottom: 1.5rem; padding-bottom: 1rem;
+      border-bottom: 1px solid var(--gray-200); overflow-x: auto; scrollbar-width: none;
+    }
+    .category-nav::-webkit-scrollbar { display: none; }
+    .category-btn {
+      font-size: 0.8125rem; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.08em; padding: 0.5rem 1rem; background: transparent;
+      border: 1px solid transparent; color: var(--gray-400); cursor: pointer;
+      white-space: nowrap; transition: all 0.2s ease; border-radius: 2px;
+    }
+    .category-btn:hover { color: var(--black); border-color: var(--gray-300); }
+    .category-btn.active { color: var(--white); border-color: var(--black); background: var(--black); }
+
+    /* Menu Grid */
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+    .menu-empty { color: var(--gray-400); padding: 3rem 1rem; text-align: center; }
+
+    .menu-item {
+      background: var(--white); border: 1px solid var(--gray-200); overflow: hidden;
+      transition: all 0.3s ease; position: relative; display: flex; flex-direction: column;
+    }
+    .menu-item::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--gold); transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s ease; z-index: 1;
+    }
+    .menu-item:hover { border-color: var(--gray-300); box-shadow: 0 20px 40px -20px rgba(0,0,0,0.1); transform: translateY(-4px); }
+    .menu-item:hover::before { transform: scaleX(1); }
+    .menu-item.sold-out { opacity: 0.55; }
+    .menu-item.sold-out:hover { transform: none; box-shadow: none; }
+
+    .menu-item-image { width: 100%; height: 200px; object-fit: cover; background: var(--gray-100); }
+    .menu-item-content { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+    .menu-item-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.5rem; }
+    .menu-item-name { font-family: 'Playfair Display', serif; font-size: 1.125rem; font-weight: 500; color: var(--black); letter-spacing: -0.01em; }
+    .menu-item-price { font-family: 'Playfair Display', serif; font-size: 1.125rem; font-weight: 600; color: var(--black); white-space: nowrap; flex-shrink: 0; }
+    .menu-item-desc { font-size: 0.875rem; line-height: 1.6; color: var(--gray-500); margin-bottom: 1.25rem; flex: 1; }
+    .menu-item-badge {
+      display: inline-block; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; padding: 0.2rem 0.5rem; margin-bottom: 0.75rem;
+      background: var(--gray-100); color: var(--gray-500);
+    }
+    .menu-item-badge.out { background: var(--error); color: #fff; }
+    .menu-item-badge.options { background: var(--gold-light); color: var(--gold-dark); }
+
+    .add-btn {
+      width: 100%; padding: 0.75rem 1rem; background: var(--black); color: var(--white);
+      border: none; font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all 0.2s ease;
+    }
+    .add-btn:hover:not(:disabled) { background: var(--gold); color: var(--black); }
+    .add-btn:disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; }
+
+    .qty-control { display: flex; align-items: center; border: 1px solid var(--gray-200); border-radius: 2px; overflow: hidden; width: fit-content; }
+    .qty-btn {
+      width: 44px; height: 44px; border: none; background: var(--white); color: var(--black);
+      font-size: 1.25rem; font-weight: 300; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease;
+    }
+    .qty-btn:hover:not(:disabled) { background: var(--black); color: var(--white); }
+    .qty-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .qty-value { width: 56px; height: 44px; border-left: 1px solid var(--gray-200); border-right: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.125rem; font-weight: 500; color: var(--black); background: var(--white); }
+
+    /* Cart Panel */
+    .cart-panel { background: var(--white); border: 1px solid var(--gray-200); display: flex; flex-direction: column; height: fit-content; position: sticky; top: 1.5rem; max-height: calc(100vh - 3rem); overflow: hidden; }
+    .cart-header { padding: 1.5rem; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: baseline; }
+    .cart-header h2 { font-family: 'Playfair Display', serif; font-size: 1.375rem; font-weight: 500; color: var(--black); }
+    .clear-cart { font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; background: transparent; border: none; color: var(--gray-400); cursor: pointer; padding: 0.5rem 0; transition: color 0.2s; }
+    .clear-cart:hover { color: var(--black); }
+
+    /* Order type */
+    .order-type { padding: 1rem 1.5rem 0; }
+    .order-type-tabs { display: flex; gap: 0.5rem; }
+    .order-type-tabs button {
+      flex: 1; padding: 0.6rem 0.5rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; background: var(--white); border: 1px solid var(--gray-200); color: var(--gray-400);
+      cursor: pointer; transition: all 0.2s ease;
+    }
+    .order-type-tabs button.active { background: var(--black); color: var(--white); border-color: var(--black); }
+    .table-field { margin-top: 0.75rem; }
+    .table-field.hidden { display: none; }
+    .table-field label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-400); margin-bottom: 0.35rem; }
+    .table-field input { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--gray-200); background: var(--white); color: var(--black); font-family: 'DM Sans', sans-serif; font-size: 0.9375rem; }
+    .table-field input:focus { outline: none; border-color: var(--gold); }
+
+    .cart-items { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; min-height: 200px; }
+    .cart-empty { text-align: center; color: var(--gray-400); padding: 3rem 1rem; font-size: 0.9375rem; }
+    .cart-empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; }
+
+    .cart-item { padding: 1rem 0; border-bottom: 1px solid var(--gray-100); }
+    .cart-item-top { display: grid; grid-template-columns: 1fr auto auto; gap: 0.75rem; align-items: start; }
+    .cart-item-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 500; color: var(--black); margin-bottom: 0.15rem; }
+    .cart-item-opts { font-size: 0.75rem; color: var(--gold-dark); margin-bottom: 0.15rem; }
+    .cart-item-qty-price { font-size: 0.8125rem; color: var(--gray-500); }
+    .cart-item-total { font-family: 'Playfair Display', serif; font-size: 1.0625rem; font-weight: 500; color: var(--black); text-align: right; white-space: nowrap; }
+    .cart-line-remove { background: transparent; border: none; color: var(--gray-400); cursor: pointer; font-size: 1.1rem; line-height: 1; padding: 0 0.25rem; }
+    .cart-line-remove:hover { color: var(--error); }
+    .cart-mini-qty { display: flex; align-items: center; gap: 0; border: 1px solid var(--gray-200); width: fit-content; margin-top: 0.5rem; }
+    .cart-mini-qty button { width: 28px; height: 28px; border: none; background: var(--white); color: var(--black); cursor: pointer; font-size: 1rem; }
+    .cart-mini-qty button:hover { background: var(--black); color: var(--white); }
+    .cart-mini-qty span { min-width: 34px; text-align: center; font-size: 0.875rem; }
+    .cart-note-input { width: 100%; margin-top: 0.5rem; padding: 0.4rem 0.6rem; border: 1px solid var(--gray-100); background: var(--white-soft); font-family: 'DM Sans', sans-serif; font-size: 0.8125rem; color: var(--black); }
+    .cart-note-input:focus { outline: none; border-color: var(--gold); }
+
+    .cart-footer { padding: 1.5rem; border-top: 1px solid var(--gray-200); background: var(--white); }
+    .cart-total-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem; }
+    .cart-total-label { font-size: 0.8125rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-400); }
+    .cart-total-amount { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 600; color: var(--black); }
+    .pay-btn { width: 100%; padding: 1.125rem 1.5rem; background: var(--black); color: var(--white); border: none; font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all 0.2s ease; }
+    .pay-btn:hover:not(:disabled) { background: var(--gold); color: var(--black); }
+    .pay-btn:disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; }
+
+    /* Modals */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(10,10,10,0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; padding: 2rem; z-index: 1000; animation: fadeIn 0.25s ease; }
+    .modal-overlay.show { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal { background: var(--white); border: 1px solid var(--gray-200); width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.35s cubic-bezier(0.16,1,0.3,1); }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-header { padding: 2rem; border-bottom: 1px solid var(--gray-200); text-align: center; }
+    .modal-header h3 { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 500; color: var(--black); margin-bottom: 0.5rem; }
+    .modal-header .amount { font-family: 'Playfair Display', serif; font-size: 2.25rem; font-weight: 600; color: var(--gold); }
+    .modal-body { padding: 2rem; }
+
+    /* Customiser */
+    .opt-group { margin-bottom: 1.5rem; }
+    .opt-group-title { font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-500); margin-bottom: 0.75rem; }
+    .opt-choice { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border: 1px solid var(--gray-200); margin-bottom: 0.5rem; cursor: pointer; transition: all 0.15s ease; }
+    .opt-choice:hover { border-color: var(--gray-300); }
+    .opt-choice.selected { border-color: var(--gold); }
+    .opt-choice input { accent-color: var(--gold); }
+    .opt-choice .opt-name { flex: 1; font-size: 0.9375rem; color: var(--black); }
+    .opt-choice .opt-delta { font-size: 0.875rem; color: var(--gray-500); }
+
+    .payment-methods { display: flex; flex-direction: column; gap: 0.75rem; }
+    .payment-method { display: flex; align-items: center; gap: 1rem; padding: 1.25rem 1.5rem; background: var(--white); border: 1px solid var(--gray-200); cursor: pointer; transition: all 0.2s ease; position: relative; flex-wrap: wrap; }
+    .payment-method:hover { border-color: var(--gray-300); background: var(--white-soft); }
+    .payment-method.selected { border-color: var(--gold); background: var(--white); }
+    .payment-method.selected::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--gold); }
+    .payment-method input { position: absolute; opacity: 0; pointer-events: none; }
+    .payment-icon { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: var(--gray-100); flex-shrink: 0; }
+    .payment-icon.cash { background: var(--black); color: var(--white); font-size: 1.25rem; }
+    .payment-icon.fib { background: linear-gradient(135deg, #003366 0%, #0055a5 100%); color: #fff; }
+    .payment-icon.fib svg { width: 28px; height: 28px; }
+    .payment-icon.qi-card { background: linear-gradient(135deg, #0066cc 0%, #0099ff 100%); color: #fff; font-weight: 700; font-size: 0.875rem; }
+    .payment-info { flex: 1; min-width: 0; }
+    .payment-name { font-family: 'Playfair Display', serif; font-size: 1.125rem; font-weight: 500; color: var(--black); margin-bottom: 0.125rem; }
+    .payment-desc { font-size: 0.8125rem; color: var(--gray-500); }
+    .payment-radio { width: 24px; height: 24px; border: 2px solid var(--gray-300); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; flex-shrink: 0; }
+    .payment-method.selected .payment-radio { border-color: var(--gold); }
+    .payment-radio::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--gold); transform: scale(0); transition: transform 0.2s ease; }
+    .payment-method.selected .payment-radio::after { transform: scale(1); }
+    .payment-note { flex-basis: 100%; font-size: 0.75rem; color: var(--gray-400); font-style: italic; padding-left: 64px; }
+
+    .modal-footer { padding: 1.5rem 2rem 2rem; border-top: 1px solid var(--gray-200); display: flex; gap: 1rem; }
+    .btn { flex: 1; padding: 1rem 1.5rem; font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; border: none; cursor: pointer; transition: all 0.2s ease; }
+    .btn-secondary { background: var(--white); color: var(--black); border: 1px solid var(--gray-200); }
+    .btn-secondary:hover { background: var(--white-soft); border-color: var(--gray-300); }
+    .btn-primary { background: var(--black); color: var(--white); }
+    .btn-primary:hover:not(:disabled) { background: var(--gold); color: var(--black); }
+    .btn-primary:disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; }
+
+    /* FIB payment flow */
+    .fib-flow { text-align: center; }
+    .fib-qr { width: 220px; height: 220px; margin: 0 auto 1rem; border: 1px solid var(--gray-200); padding: 0.5rem; background: #fff; }
+    .fib-qr img { width: 100%; height: 100%; object-fit: contain; }
+    .fib-code { font-family: 'DM Sans', monospace; font-size: 1.25rem; letter-spacing: 0.15em; font-weight: 600; color: var(--black); margin-bottom: 0.75rem; }
+    .fib-links { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
+    .fib-link { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.5rem 0.9rem; border: 1px solid var(--gold); color: var(--gold-dark); text-decoration: none; }
+    .fib-link:hover { background: var(--gold); color: var(--black); }
+    .fib-status-line { font-size: 0.9375rem; margin: 0.75rem 0; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .fib-status-line.pending { color: var(--gray-500); }
+    .fib-status-line.paid { color: var(--success); font-weight: 600; }
+    .fib-status-line.error { color: var(--error); }
+    .fib-countdown { font-size: 0.8125rem; color: var(--gray-400); margin-bottom: 1rem; }
+    .spinner { width: 16px; height: 16px; border: 2px solid var(--gray-200); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .config-warning { background: #fff8e1; border: 1px solid var(--gold); padding: 1rem; font-size: 0.875rem; color: var(--gold-dark); margin-bottom: 1rem; }
+    @media (prefers-color-scheme: dark) { .config-warning { background: #2a2410; } }
+
+    /* Receipt */
+    .receipt-modal .modal { max-width: 400px; }
+    .receipt-header { padding: 2rem; text-align: center; border-bottom: 1px dashed var(--gray-300); }
+    .receipt-header .shop-name { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 500; color: var(--black); margin-bottom: 0.25rem; }
+    .receipt-header .tagline { font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gray-400); margin-bottom: 1rem; }
+    .receipt-header .order-no { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--gold-dark); margin-bottom: 0.25rem; }
+    .receipt-header .date { font-size: 0.875rem; color: var(--gray-500); }
+    .receipt-meta { font-size: 0.8125rem; color: var(--gray-500); margin-top: 0.35rem; text-transform: capitalize; }
+    .receipt-items { padding: 1.5rem 2rem; }
+    .receipt-item { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px dashed var(--gray-200); gap: 1rem; }
+    .receipt-item:last-child { border-bottom: none; }
+    .receipt-item-left { display: flex; flex-direction: column; gap: 0.2rem; }
+    .receipt-item-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 500; color: var(--black); }
+    .receipt-item-qty { font-size: 0.8125rem; color: var(--gray-500); }
+    .receipt-item-note { font-size: 0.75rem; color: var(--gray-400); font-style: italic; }
+    .receipt-item-total { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 500; color: var(--black); white-space: nowrap; }
+    .receipt-footer { padding: 1.5rem 2rem 2rem; border-top: 1px dashed var(--gray-300); }
+    .receipt-total { display: flex; justify-content: space-between; font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 600; color: var(--black); margin-bottom: 1.5rem; padding-top: 0.5rem; }
+    .receipt-total .amount { color: var(--gold); }
+    .receipt-payment { font-size: 0.8125rem; color: var(--gray-500); margin-bottom: 1.5rem; padding: 1rem; background: var(--white-soft); border: 1px solid var(--gray-200); }
+    .receipt-payment strong { color: var(--black); }
+    .receipt-actions { display: flex; gap: 0.75rem; }
+    .btn-close { flex: 1; padding: 1rem; background: var(--black); color: var(--white); border: none; font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s ease; }
+    .btn-close:hover { background: var(--gold); color: var(--black); }
+    .btn-print { flex: 1; padding: 1rem; background: var(--white); color: var(--black); border: 1px solid var(--gray-200); font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; }
+    .btn-print:hover { border-color: var(--gold); }
+
+    /* Reports */
+    .reports { display: none; }
+    .reports.active { display: block; }
+    .menu-section.hidden, .cart-panel.hidden { display: none; }
+    .reports-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .reports-head h2 { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 500; }
+    .reports-date { padding: 0.6rem 0.75rem; border: 1px solid var(--gray-200); background: var(--white); color: var(--black); font-family: 'DM Sans', sans-serif; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { background: var(--white); border: 1px solid var(--gray-200); padding: 1.5rem; }
+    .stat-card .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-400); margin-bottom: 0.5rem; }
+    .stat-card .value { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 600; color: var(--black); }
+    .stat-card .value.gold { color: var(--gold); }
+    .report-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .report-block { background: var(--white); border: 1px solid var(--gray-200); padding: 1.5rem; }
+    .report-block h3 { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 500; margin-bottom: 1rem; }
+    .report-row { display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid var(--gray-100); font-size: 0.9375rem; }
+    .report-row:last-child { border-bottom: none; }
+    .report-row .k { color: var(--gray-500); text-transform: capitalize; }
+    .report-row .v { font-weight: 600; color: var(--black); }
+    .orders-list { margin-top: 2rem; }
+    .order-card { background: var(--white); border: 1px solid var(--gray-200); padding: 1rem 1.5rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; cursor: pointer; transition: border-color 0.2s; }
+    .order-card:hover { border-color: var(--gold); }
+    .order-card .oc-id { font-family: 'Playfair Display', serif; font-weight: 600; color: var(--gold-dark); }
+    .order-card .oc-meta { font-size: 0.8125rem; color: var(--gray-500); text-transform: capitalize; }
+    .order-card .oc-total { font-family: 'Playfair Display', serif; font-size: 1.125rem; font-weight: 600; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--black); color: var(--white); padding: 1rem 2rem; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.75rem; z-index: 1100; opacity: 0; transition: all 0.35s cubic-bezier(0.16,1,0.3,1); border: 1px solid var(--gold); }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    @media (max-width: 1100px) {
+      main { grid-template-columns: 1fr; padding: 1.5rem; }
+      .cart-panel { position: static; max-height: none; order: -1; }
+      .menu-grid { grid-template-columns: 1fr; }
+      .report-cols { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      header { padding: 1rem 1.25rem; flex-wrap: wrap; }
+      main { padding: 1rem 1.25rem; gap: 1rem; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-mark">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="40" height="40">
+          <defs>
+            <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#c9a84c"/><stop offset="50%" style="stop-color:#e8d5a8"/><stop offset="100%" style="stop-color:#9d7f2e"/>
+            </linearGradient>
+            <linearGradient id="blackGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#0a0a0a"/><stop offset="100%" style="stop-color:#1c1c1c"/>
+            </linearGradient>
+          </defs>
+          <circle cx="100" cy="100" r="96" fill="none" stroke="url(#goldGradient)" stroke-width="2"/>
+          <circle cx="100" cy="100" r="88" fill="url(#blackGradient)"/>
+          <g transform="translate(100, 100)">
+            <circle cx="0" cy="0" r="18" fill="url(#goldGradient)"/>
+            <circle cx="0" cy="0" r="14" fill="url(#blackGradient)"/>
+            <circle cx="0" cy="0" r="8" fill="url(#goldGradient)"/>
+            <g stroke="url(#goldGradient)" stroke-width="1.5" stroke-linecap="round" opacity="0.9">
+              <line x1="0" y1="-38" x2="0" y2="-52"/><line x1="0" y1="38" x2="0" y2="52"/>
+              <line x1="-38" y1="0" x2="-52" y2="0"/><line x1="38" y1="0" x2="52" y2="0"/>
+              <line x1="-27" y1="-27" x2="-37" y2="-37"/><line x1="27" y1="-27" x2="37" y2="-37"/>
+              <line x1="-27" y1="27" x2="-37" y2="37"/><line x1="27" y1="27" x2="37" y2="37"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <span>Kurdo Lafa</span>
+    </div>
+    <div class="view-toggle" role="tablist">
+      <button id="viewMenuBtn" class="active" role="tab">Menu</button>
+      <button id="viewReportsBtn" role="tab">Reports</button>
+    </div>
+    <div class="cart-summary">
+      <span class="cart-count"><strong id="cartCount">0</strong> items</span>
+      <span class="cart-subtotal" id="headerSubtotal">0 IQD</span>
+    </div>
+  </header>
+
+  <main id="mainEl">
+    <section class="menu-section" id="menuSection">
+      <div class="toolbar">
+        <input type="search" class="search-box" id="searchBox" placeholder="Search dishes, drinks, desserts…" aria-label="Search menu">
+      </div>
+      <nav class="category-nav" id="categoryNav" role="tablist" aria-label="Menu categories"></nav>
+      <div class="menu-grid" id="menuGrid"></div>
+    </section>
+
+    <aside class="cart-panel" id="cartPanel" aria-label="Order summary">
+      <div class="cart-header">
+        <h2>Order</h2>
+        <button class="clear-cart" id="clearCart">Clear</button>
+      </div>
+      <div class="order-type">
+        <div class="order-type-tabs" id="orderTypeTabs">
+          <button data-type="dine-in" class="active">Dine-in</button>
+          <button data-type="takeaway">Takeaway</button>
+          <button data-type="delivery">Delivery</button>
+        </div>
+        <div class="table-field" id="tableField">
+          <label for="tableInput">Table number</label>
+          <input type="text" id="tableInput" placeholder="e.g. 7" inputmode="numeric">
+        </div>
+      </div>
+      <div class="cart-items" id="cartItems">
+        <div class="cart-empty"><div class="cart-empty-icon">🍽️</div>No items in order</div>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total-row">
+          <span class="cart-total-label">Total</span>
+          <span class="cart-total-amount" id="cartTotal">0 IQD</span>
+        </div>
+        <button class="pay-btn" id="payBtn" disabled>Proceed to Payment</button>
+      </div>
+    </aside>
+
+    <section class="reports" id="reportsView">
+      <div class="reports-head">
+        <h2>Sales &amp; Reports</h2>
+        <input type="date" class="reports-date" id="reportDate">
+      </div>
+      <div class="stat-grid" id="statGrid"></div>
+      <div class="report-cols">
+        <div class="report-block"><h3>Payment methods</h3><div id="byPayment"></div></div>
+        <div class="report-block"><h3>Top items</h3><div id="topItems"></div></div>
+      </div>
+      <div class="orders-list">
+        <div class="report-block"><h3>Recent orders</h3><div id="ordersList"></div></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Customiser Modal -->
+  <div class="modal-overlay" id="customiseModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="custName">Customise</h3>
+        <div class="amount" id="custPrice">0 IQD</div>
+      </div>
+      <div class="modal-body" id="custBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="custCancel">Cancel</button>
+        <button class="btn btn-primary" id="custAdd">Add to Order</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div class="modal-overlay" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="paymentTitle">Payment</h3>
+        <div class="amount" id="paymentAmount">0 IQD</div>
+      </div>
+      <div class="modal-body">
+        <div class="payment-methods" id="paymentMethods">
+          <label class="payment-method selected" data-method="cash">
+            <input type="radio" name="payment" value="cash" checked>
+            <div class="payment-icon cash">💵</div>
+            <div class="payment-info"><div class="payment-name">Cash</div><div class="payment-desc">Pay at the counter</div></div>
+            <div class="payment-radio"></div>
+          </label>
+          <label class="payment-method" data-method="fib">
+            <input type="radio" name="payment" value="fib">
+            <div class="payment-icon fib">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="14" x2="18" y2="14"/></svg>
+            </div>
+            <div class="payment-info"><div class="payment-name">FIB</div><div class="payment-desc">First Iraqi Bank — scan &amp; pay</div></div>
+            <div class="payment-radio"></div>
+          </label>
+          <label class="payment-method" data-method="qi-card">
+            <input type="radio" name="payment" value="qi-card">
+            <div class="payment-icon qi-card">QI</div>
+            <div class="payment-info"><div class="payment-name">Qi Card</div><div class="payment-desc">Pay at terminal</div></div>
+            <div class="payment-radio"></div>
+            <div class="payment-note">Confirmed manually at the card terminal — no online API.</div>
+          </label>
+        </div>
+        <div id="fibFlow" class="fib-flow" style="display:none; margin-top:1.5rem;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelPayment">Cancel</button>
+        <button class="btn btn-primary" id="confirmPayment">Confirm Payment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Receipt Modal -->
+  <div class="modal-overlay receipt-modal" id="receiptModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="receipt-header">
+        <div class="shop-name">Kurdo Lafa</div>
+        <div class="tagline">Authentic Kurdish Cuisine</div>
+        <div class="order-no" id="receiptOrderNo"></div>
+        <div class="date" id="receiptDate"></div>
+        <div class="receipt-meta" id="receiptMeta"></div>
+      </div>
+      <div class="receipt-items" id="receiptItems"></div>
+      <div class="receipt-footer">
+        <div class="receipt-total"><span>Total</span><span class="amount" id="receiptTotal">0 IQD</span></div>
+        <div class="receipt-payment" id="receiptPayment"></div>
+        <div class="receipt-actions">
+          <button class="btn-print" id="printReceipt">Print</button>
+          <button class="btn-close" id="closeReceipt">New Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMessage"></span></div>
+
+  <script>
+    // ---- Menu (prices in whole Iraqi Dinar) ----
+    const MENU = [
+      { id:'biryani', name:'Kurdish Biryani', price:22000, category:'mains', available:true,
+        desc:'Fragrant basmati rice with tender lamb, raisins, almonds & aromatic spices',
+        image:'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=600&h=400&fit=crop',
+        options:[ { title:'Portion', type:'single', choices:[ {name:'Regular',delta:0}, {name:'Large',delta:5000} ] },
+                  { title:'Add-ons', type:'multi', choices:[ {name:'Extra lamb',delta:6000}, {name:'Salad',delta:2000} ] } ] },
+      { id:'kebab', name:'Lamb Kebab (Şiş)', price:25000, category:'mains', available:true,
+        desc:'Char-grilled marinated lamb skewers with sumac onions & flatbread',
+        image:'https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=600&h=400&fit=crop',
+        options:[ { title:'Skewers', type:'single', choices:[ {name:'2 skewers',delta:0}, {name:'3 skewers',delta:8000} ] } ] },
+      { id:'dolma', name:'Dolma', price:18000, category:'mains', available:true,
+        desc:'Grape leaves & peppers stuffed with herbed rice, lamb & pomegranate molasses',
+        image:'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&h=400&fit=crop' },
+      { id:'kubbeh', name:'Kubbeh Soup', price:16000, category:'mains', available:true,
+        desc:'Bulgur dumplings filled with spiced beef in tangy beet & tomato broth',
+        image:'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&h=400&fit=crop' },
+      { id:'birinc', name:'Birinc Pilaf', price:12000, category:'mains', available:true,
+        desc:'Buttery rice with vermicelli, chickpeas, carrots & warm spices',
+        image:'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&h=400&fit=crop' },
+      { id:'tawa', name:'Tawa Goat', price:30000, category:'mains', available:false,
+        desc:'Slow-cooked goat with tomatoes, peppers, garlic & Kurdish herbs',
+        image:'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&h=400&fit=crop' },
+
+      { id:'doogh', name:'Doogh', price:3000, category:'drinks', available:true,
+        desc:'Refreshing minted yogurt drink with cucumber & salt',
+        image:'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=600&h=400&fit=crop',
+        options:[ { title:'Size', type:'single', choices:[ {name:'Glass',delta:0}, {name:'Jug',delta:4000} ] } ] },
+      { id:'chai', name:'Kurdish Chai', price:2000, category:'drinks', available:true,
+        desc:'Strong black tea served in a traditional glass with sugar cubes',
+        image:'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=600&h=400&fit=crop' },
+      { id:'sharbat', name:'Sharbat-e-Portagal', price:4000, category:'drinks', available:true,
+        desc:'Fresh orange blossom & rose water sherbet with chia seeds',
+        image:'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=600&h=400&fit=crop' },
+      { id:'mast', name:'Mast-o-Khiar', price:3000, category:'drinks', available:true,
+        desc:'Chilled yogurt & cucumber drink with dried mint & walnuts',
+        image:'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=600&h=400&fit=crop' },
+      { id:'soda', name:'Kurdish Cola', price:2000, category:'drinks', available:true,
+        desc:'Local cola with pomegranate essence',
+        image:'https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=600&h=400&fit=crop' },
+      { id:'ayran', name:'Ayran', price:2500, category:'drinks', available:true,
+        desc:'Traditional salty yogurt drink, perfectly chilled',
+        image:'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=600&h=400&fit=crop' },
+
+      { id:'baklava', name:'Kurdish Baklava', price:6000, category:'desserts', available:true,
+        desc:'Layers of phyllo, pistachios, walnuts & rose-scented syrup',
+        image:'https://images.unsplash.com/photo-1519675080663-20b2e4e6b4b5?w=600&h=400&fit=crop' },
+      { id:'kleicha', name:'Kleicha', price:5000, category:'desserts', available:true,
+        desc:'Buttery cookies filled with spiced dates, cardamom & sesame',
+        image:'https://images.unsplash.com/photo-1499636138198-5e37c2b8c5a6?w=600&h=400&fit=crop' },
+      { id:'halva', name:'Tahini Halva', price:5000, category:'desserts', available:true,
+        desc:'Sesame tahini confection with pistachios & rose water',
+        image:'https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=600&h=400&fit=crop' },
+      { id:'kadaif', name:'Kadaif', price:7000, category:'desserts', available:true,
+        desc:'Crispy kadaif pastry with clotted cream, pistachios & syrup',
+        image:'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=600&h=400&fit=crop' },
+      { id:'rice_pudding', name:'Sütlaç', price:5000, category:'desserts', available:true,
+        desc:'Creamy baked rice pudding with cinnamon & a caramelized top',
+        image:'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=600&h=400&fit=crop' },
+      { id:'lokma', name:'Lokma', price:5000, category:'desserts', available:true,
+        desc:'Fried dough balls soaked in saffron syrup with crushed pistachios',
+        image:'https://images.unsplash.com/photo-1535920658096-2e9f1a9b6b1b?w=600&h=400&fit=crop' }
+    ];
+
+    const CATEGORIES = [
+      { id:'mains', label:'Mains' }, { id:'drinks', label:'Drinks' }, { id:'desserts', label:'Desserts' }
+    ];
+    const PAYMENT_METHODS = {
+      cash: { name:'Cash', desc:'Pay at the counter' },
+      fib: { name:'FIB', desc:'First Iraqi Bank' },
+      'qi-card': { name:'Qi Card', desc:'Pay at terminal' }
+    };
+
+    // ---- State ----
+    // cart is an array of lines: { key, id, name, unitPrice, qty, optionLabel, note }
+    let cart = [];
+    let activeCategory = 'mains';
+    let searchQuery = '';
+    let orderType = 'dine-in';
+    let selectedPayment = 'cash';
+    let fibConfigured = false;
+    let currentFib = null;   // { paymentId, poll, countdown, paid }
+
+    const fmt = (n) => Math.round(n).toLocaleString('en-US') + ' IQD';
+    const byId = (id) => MENU.find(m => m.id === id);
+
+    // ---- DOM ----
+    const $ = (id) => document.getElementById(id);
+    const menuGrid = $('menuGrid'), categoryNav = $('categoryNav'), searchBox = $('searchBox');
+    const cartItems = $('cartItems'), cartCount = $('cartCount'), headerSubtotal = $('headerSubtotal'), cartTotal = $('cartTotal');
+    const payBtn = $('payBtn'), clearCartBtn = $('clearCart');
+    const toast = $('toast'), toastMessage = $('toastMessage');
+
+    const IMG_ERR = "this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22600%22 height=%22400%22 viewBox=%220 0 600 400%22><rect fill=%22%23e8e8e8%22 width=%22600%22 height=%22400%22/></svg>'";
+
+    function showToast(msg) {
+      toastMessage.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ---- Menu rendering ----
+    function renderCategoryNav() {
+      categoryNav.style.display = searchQuery ? 'none' : 'flex';
+      categoryNav.innerHTML = CATEGORIES.map(c => `
+        <button class="category-btn ${c.id===activeCategory?'active':''}" data-category="${c.id}" role="tab" aria-selected="${c.id===activeCategory}">${c.label}</button>
+      `).join('');
+      categoryNav.querySelectorAll('.category-btn').forEach(b =>
+        b.addEventListener('click', () => { activeCategory = b.dataset.category; renderMenu(); renderCategoryNav(); }));
+    }
+
+    function visibleItems() {
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        return MENU.filter(m => m.name.toLowerCase().includes(q) || m.desc.toLowerCase().includes(q));
+      }
+      return MENU.filter(m => m.category === activeCategory);
+    }
+
+    function renderMenu() {
+      const items = visibleItems();
+      if (!items.length) { menuGrid.innerHTML = `<div class="menu-empty">No items match “${searchQuery}”.</div>`; return; }
+      menuGrid.innerHTML = items.map(item => {
+        const hasOpts = Array.isArray(item.options) && item.options.length;
+        const badge = !item.available ? `<span class="menu-item-badge out">Sold out</span>`
+                    : hasOpts ? `<span class="menu-item-badge options">Options</span>` : '';
+        return `
+        <article class="menu-item ${item.available?'':'sold-out'}" data-id="${item.id}">
+          <img class="menu-item-image" src="${item.image}" alt="" loading="lazy" onerror="${IMG_ERR}">
+          <div class="menu-item-content">
+            ${badge}
+            <div class="menu-item-header">
+              <h3 class="menu-item-name">${item.name}</h3>
+              <span class="menu-item-price">${fmt(item.price)}</span>
+            </div>
+            <p class="menu-item-desc">${item.desc}</p>
+            <button class="add-btn" data-id="${item.id}" ${item.available?'':'disabled'}>
+              ${!item.available ? 'Unavailable' : hasOpts ? 'Customise & Add' : 'Add to Order'}
+            </button>
+          </div>
+        </article>`;
+      }).join('');
+      menuGrid.querySelectorAll('.add-btn').forEach(b =>
+        b.addEventListener('click', () => { if (!b.disabled) onAdd(b.dataset.id); }));
+    }
+
+    function onAdd(id) {
+      const item = byId(id);
+      if (!item || !item.available) return;
+      if (Array.isArray(item.options) && item.options.length) openCustomiser(item);
+      else addLine(item, 0, '', 1);
+    }
+
+    // ---- Customiser ----
+    const customiseModal = $('customiseModal');
+    let custItem = null, custState = [];
+
+    function openCustomiser(item) {
+      custItem = item;
+      custState = item.options.map(g => g.type === 'single' ? 0 : []);
+      $('custName').textContent = item.name;
+      renderCustomiser();
+      customiseModal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function custDelta() {
+      let d = 0;
+      custItem.options.forEach((g, gi) => {
+        if (g.type === 'single') d += g.choices[custState[gi]].delta;
+        else custState[gi].forEach(ci => d += g.choices[ci].delta);
+      });
+      return d;
+    }
+    function custLabel() {
+      const parts = [];
+      custItem.options.forEach((g, gi) => {
+        if (g.type === 'single') { const c = g.choices[custState[gi]]; if (c.delta || g.title==='Portion'||g.title==='Size'||g.title==='Skewers') parts.push(c.name); }
+        else custState[gi].forEach(ci => parts.push(g.choices[ci].name));
+      });
+      return parts.join(', ');
+    }
+
+    function renderCustomiser() {
+      $('custPrice').textContent = fmt(custItem.price + custDelta());
+      $('custBody').innerHTML = custItem.options.map((g, gi) => `
+        <div class="opt-group">
+          <div class="opt-group-title">${g.title}</div>
+          ${g.choices.map((c, ci) => {
+            const sel = g.type==='single' ? custState[gi]===ci : custState[gi].includes(ci);
+            return `<label class="opt-choice ${sel?'selected':''}">
+              <input type="${g.type==='single'?'radio':'checkbox'}" name="g${gi}" data-g="${gi}" data-c="${ci}" ${sel?'checked':''}>
+              <span class="opt-name">${c.name}</span>
+              <span class="opt-delta">${c.delta?('+ '+fmt(c.delta)):'—'}</span>
+            </label>`;
+          }).join('')}
+        </div>`).join('');
+      $('custBody').querySelectorAll('input').forEach(inp =>
+        inp.addEventListener('change', () => {
+          const gi = +inp.dataset.g, ci = +inp.dataset.c;
+          if (custItem.options[gi].type === 'single') custState[gi] = ci;
+          else {
+            const arr = custState[gi];
+            if (arr.includes(ci)) custState[gi] = arr.filter(x => x !== ci);
+            else arr.push(ci);
+          }
+          renderCustomiser();
+        }));
+    }
+
+    $('custCancel').addEventListener('click', closeCustomiser);
+    customiseModal.addEventListener('click', e => { if (e.target === customiseModal) closeCustomiser(); });
+    function closeCustomiser() { customiseModal.classList.remove('show'); document.body.style.overflow = ''; }
+    $('custAdd').addEventListener('click', () => {
+      addLine(custItem, custDelta(), custLabel(), 1);
+      closeCustomiser();
+    });
+
+    // ---- Cart ----
+    function addLine(item, delta, optionLabel, qty) {
+      const unitPrice = item.price + delta;
+      const key = item.id + '|' + optionLabel;
+      const existing = cart.find(l => l.key === key && !l.note);
+      if (existing) existing.qty += qty;
+      else cart.push({ key, id:item.id, name:item.name, unitPrice, qty, optionLabel, note:'' });
+      renderCart();
+      showToast(`${item.name} added`);
+    }
+
+    function calcTotal() { return cart.reduce((s, l) => s + l.unitPrice * l.qty, 0); }
+
+    function renderCart() {
+      if (!cart.length) {
+        cartItems.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🍽️</div>No items in order</div>`;
+        payBtn.disabled = true;
+      } else {
+        cartItems.innerHTML = cart.map((l, i) => `
+          <div class="cart-item">
+            <div class="cart-item-top">
+              <div>
+                <div class="cart-item-name">${l.name}</div>
+                ${l.optionLabel ? `<div class="cart-item-opts">${l.optionLabel}</div>` : ''}
+                <div class="cart-item-qty-price">${fmt(l.unitPrice)} each</div>
+                <div class="cart-mini-qty">
+                  <button data-act="dec" data-i="${i}" aria-label="Decrease">−</button>
+                  <span>${l.qty}</span>
+                  <button data-act="inc" data-i="${i}" aria-label="Increase">+</button>
+                </div>
+              </div>
+              <div class="cart-item-total">${fmt(l.unitPrice * l.qty)}</div>
+              <button class="cart-line-remove" data-act="rm" data-i="${i}" aria-label="Remove">×</button>
+            </div>
+            <input class="cart-note-input" data-i="${i}" placeholder="Add a note (e.g. no onions)…" value="${l.note.replace(/"/g,'&quot;')}">
+          </div>`).join('');
+        payBtn.disabled = false;
+        cartItems.querySelectorAll('button[data-act]').forEach(b => b.addEventListener('click', () => {
+          const i = +b.dataset.i;
+          if (b.dataset.act === 'inc') cart[i].qty++;
+          else if (b.dataset.act === 'dec') { cart[i].qty--; if (cart[i].qty <= 0) cart.splice(i, 1); }
+          else if (b.dataset.act === 'rm') cart.splice(i, 1);
+          renderCart();
+        }));
+        cartItems.querySelectorAll('.cart-note-input').forEach(inp =>
+          inp.addEventListener('input', () => { cart[+inp.dataset.i].note = inp.value; }));
+      }
+      const totalQty = cart.reduce((s, l) => s + l.qty, 0);
+      const total = calcTotal();
+      cartCount.textContent = totalQty;
+      headerSubtotal.textContent = fmt(total);
+      cartTotal.textContent = fmt(total);
+    }
+
+    clearCartBtn.addEventListener('click', () => {
+      if (cart.length && confirm('Clear the current order?')) { cart = []; renderCart(); }
+    });
+
+    // ---- Order type ----
+    $('orderTypeTabs').querySelectorAll('button').forEach(b =>
+      b.addEventListener('click', () => {
+        orderType = b.dataset.type;
+        $('orderTypeTabs').querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
+        $('tableField').classList.toggle('hidden', orderType !== 'dine-in');
+      }));
+
+    // ---- Search ----
+    searchBox.addEventListener('input', () => {
+      searchQuery = searchBox.value.trim();
+      renderCategoryNav(); renderMenu();
+    });
+
+    // ---- View toggle ----
+    $('viewMenuBtn').addEventListener('click', () => setView('menu'));
+    $('viewReportsBtn').addEventListener('click', () => setView('reports'));
+    function setView(v) {
+      const menu = v === 'menu';
+      $('viewMenuBtn').classList.toggle('active', menu);
+      $('viewReportsBtn').classList.toggle('active', !menu);
+      $('menuSection').classList.toggle('hidden', !menu);
+      $('cartPanel').classList.toggle('hidden', !menu);
+      $('reportsView').classList.toggle('active', !menu);
+      $('mainEl').classList.toggle('reports-active', !menu);
+      if (!menu) loadReports();
+    }
+
+    // ---- Payment ----
+    const paymentModal = $('paymentModal'), paymentMethodsEl = $('paymentMethods');
+    const confirmPaymentBtn = $('confirmPayment'), cancelPaymentBtn = $('cancelPayment'), fibFlow = $('fibFlow');
+    let lastOrder = null;
+
+    payBtn.addEventListener('click', () => {
+      if (!cart.length) return;
+      $('paymentAmount').textContent = fmt(calcTotal());
+      selectedPayment = 'cash';
+      updatePaymentSelection();
+      resetFibFlow();
+      confirmPaymentBtn.style.display = '';
+      confirmPaymentBtn.disabled = false;
+      paymentModal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    });
+
+    function updatePaymentSelection() {
+      paymentMethodsEl.querySelectorAll('.payment-method').forEach(el => {
+        const sel = el.dataset.method === selectedPayment;
+        el.classList.toggle('selected', sel);
+        el.querySelector('input').checked = sel;
+      });
+      confirmPaymentBtn.textContent = selectedPayment === 'fib' ? 'Generate FIB QR' : 'Confirm Payment';
+    }
+
+    paymentMethodsEl.addEventListener('click', e => {
+      const el = e.target.closest('.payment-method');
+      if (!el) return;
+      selectedPayment = el.dataset.method;
+      resetFibFlow();
+      updatePaymentSelection();
+    });
+
+    function resetFibFlow() {
+      if (currentFib) { clearInterval(currentFib.poll); clearInterval(currentFib.countdown); }
+      currentFib = null;
+      fibFlow.style.display = 'none';
+      fibFlow.innerHTML = '';
+    }
+
+    confirmPaymentBtn.addEventListener('click', async () => {
+      if (selectedPayment === 'cash') return finalizeOrder({ method:'cash', status:'paid' });
+      if (selectedPayment === 'qi-card') return finalizeOrder({ method:'qi-card', status:'paid', reference:'terminal' });
+      if (selectedPayment === 'fib') return startFibPayment();
+    });
+
+    async function startFibPayment() {
+      confirmPaymentBtn.disabled = true;
+      fibFlow.style.display = 'block';
+      fibFlow.innerHTML = `<div class="fib-status-line pending"><span class="spinner"></span> Creating FIB payment…</div>`;
+      try {
+        const res = await fetch('/api/payments/fib', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ amount: calcTotal(), description: 'Kurdo Lafa order' })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          fibFlow.innerHTML = `<div class="config-warning">${data.code === 'FIB_NOT_CONFIGURED'
+            ? 'FIB is not configured on the server. Add FIB_CLIENT_ID and FIB_CLIENT_SECRET to <strong>.env</strong>, then restart. You can still take Cash orders.'
+            : (data.error || 'Could not start FIB payment.')}</div>`;
+          confirmPaymentBtn.disabled = false;
+          return;
+        }
+        renderFibFlow(data);
+      } catch (e) {
+        fibFlow.innerHTML = `<div class="config-warning">Network error contacting the server.</div>`;
+        confirmPaymentBtn.disabled = false;
+      }
+    }
+
+    function renderFibFlow(p) {
+      confirmPaymentBtn.style.display = 'none';
+      const qrSrc = p.qrCode && p.qrCode.startsWith('data:') ? p.qrCode
+        : `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(p.personalAppLink || p.readableCode || p.paymentId)}`;
+      fibFlow.innerHTML = `
+        <div class="fib-qr"><img src="${qrSrc}" alt="FIB payment QR code"></div>
+        ${p.readableCode ? `<div class="fib-code">${p.readableCode}</div>` : ''}
+        <div class="fib-links">
+          ${p.personalAppLink ? `<a class="fib-link" href="${p.personalAppLink}" target="_blank" rel="noopener">Open FIB app</a>` : ''}
+        </div>
+        <div class="fib-status-line pending" id="fibStatusLine"><span class="spinner"></span> Waiting for payment…</div>
+        <div class="fib-countdown" id="fibCountdown"></div>
+        <button class="btn btn-secondary" id="fibCancelBtn" style="max-width:200px;margin:0 auto;">Cancel payment</button>`;
+
+      currentFib = { paymentId: p.paymentId, poll:null, countdown:null, paid:false };
+
+      $('fibCancelBtn').addEventListener('click', async () => {
+        try { await fetch(`/api/payments/fib/${p.paymentId}/cancel`, { method:'POST' }); } catch {}
+        resetFibFlow();
+        confirmPaymentBtn.style.display = '';
+        confirmPaymentBtn.disabled = false;
+      });
+
+      if (p.validUntil) {
+        const end = new Date(p.validUntil).getTime();
+        currentFib.countdown = setInterval(() => {
+          const left = Math.max(0, Math.floor((end - Date.now()) / 1000));
+          const cd = $('fibCountdown'); if (cd) cd.textContent = left > 0 ? `Expires in ${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}` : 'Expired';
+          if (left <= 0) { clearInterval(currentFib.countdown); }
+        }, 1000);
+      }
+
+      currentFib.poll = setInterval(async () => {
+        try {
+          const r = await fetch(`/api/payments/fib/${p.paymentId}/status`);
+          const d = await r.json();
+          if (!r.ok) return;
+          const line = $('fibStatusLine');
+          if (d.status === 'PAID') {
+            currentFib.paid = true;
+            clearInterval(currentFib.poll); clearInterval(currentFib.countdown);
+            if (line) { line.className = 'fib-status-line paid'; line.textContent = '✓ Payment received'; }
+            setTimeout(() => finalizeOrder({ method:'fib', status:'paid', reference:p.paymentId }), 700);
+          } else if (d.status === 'DECLINED') {
+            clearInterval(currentFib.poll); clearInterval(currentFib.countdown);
+            if (line) { line.className = 'fib-status-line error'; line.textContent = '✗ Payment declined'; }
+            confirmPaymentBtn.style.display = ''; confirmPaymentBtn.disabled = false;
+          }
+        } catch {}
+      }, 2500);
+    }
+
+    function closePaymentModal() {
+      resetFibFlow();
+      paymentModal.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+    cancelPaymentBtn.addEventListener('click', closePaymentModal);
+    paymentModal.addEventListener('click', e => { if (e.target === paymentModal) closePaymentModal(); });
+
+    // ---- Finalize order → persist + receipt ----
+    async function finalizeOrder(payment) {
+      const items = cart.map(l => ({
+        id:l.id, name:l.name + (l.optionLabel ? ` (${l.optionLabel})` : ''),
+        qty:l.qty, unitPrice:l.unitPrice, note:l.note || undefined
+      }));
+      const payload = {
+        items, total: calcTotal(), orderType,
+        table: orderType === 'dine-in' ? ($('tableInput').value.trim() || null) : null,
+        payment
+      };
+      let saved = null;
+      try {
+        const r = await fetch('/api/orders', {
+          method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+        });
+        if (r.ok) saved = await r.json();
+      } catch {}
+      if (!saved) { saved = { ...payload, id:'—', createdAt:new Date().toISOString() }; showToast('Saved locally (server offline)'); }
+      lastOrder = saved;
+      closePaymentModal();
+      showReceipt(saved);
+    }
+
+    function showReceipt(order) {
+      $('receiptOrderNo').textContent = 'Order #' + order.id;
+      $('receiptDate').textContent = new Date(order.createdAt).toLocaleString('en-US', {
+        weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+      $('receiptMeta').textContent = order.orderType + (order.table ? ` · Table ${order.table}` : '');
+      $('receiptItems').innerHTML = order.items.map(it => `
+        <div class="receipt-item">
+          <div class="receipt-item-left">
+            <div class="receipt-item-name">${it.name}</div>
+            <div class="receipt-item-qty">${it.qty} × ${fmt(it.unitPrice)}</div>
+            ${it.note ? `<div class="receipt-item-note">“${it.note}”</div>` : ''}
+          </div>
+          <div class="receipt-item-total">${fmt(it.unitPrice * it.qty)}</div>
+        </div>`).join('');
+      $('receiptTotal').textContent = fmt(order.total);
+      const pm = PAYMENT_METHODS[order.payment.method] || { name:order.payment.method, desc:'' };
+      let details = `<strong>Payment:</strong> ${pm.name} — ${order.payment.status}`;
+      if (order.payment.reference) details += `<br><span style="color:var(--gold);">Ref: ${order.payment.reference}</span>`;
+      $('receiptPayment').innerHTML = details;
+      $('receiptModal').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    $('printReceipt').addEventListener('click', () => window.print());
+    $('closeReceipt').addEventListener('click', () => {
+      $('receiptModal').classList.remove('show');
+      document.body.style.overflow = '';
+      cart = []; $('tableInput').value = '';
+      renderCart();
+    });
+    $('receiptModal').addEventListener('click', e => { if (e.target === $('receiptModal')) $('closeReceipt').click(); });
+
+    // ---- Reports ----
+    async function loadReports() {
+      const date = $('reportDate').value;
+      try {
+        const [sumRes, ordRes] = await Promise.all([
+          fetch('/api/reports/summary' + (date ? `?date=${date}` : '')),
+          fetch('/api/orders?limit=25')
+        ]);
+        const s = await sumRes.json();
+        const orders = await ordRes.json();
+        renderReports(s, orders);
+      } catch {
+        $('statGrid').innerHTML = `<div class="stat-card"><div class="label">Reports</div><div class="value">Server offline</div></div>`;
+      }
+    }
+
+    function renderReports(s, orders) {
+      $('statGrid').innerHTML = `
+        <div class="stat-card"><div class="label">Orders (${s.date})</div><div class="value">${s.orderCount}</div></div>
+        <div class="stat-card"><div class="label">Gross revenue</div><div class="value gold">${fmt(s.gross)}</div></div>
+        <div class="stat-card"><div class="label">Avg order</div><div class="value">${s.orderCount ? fmt(s.gross/s.orderCount) : '0 IQD'}</div></div>`;
+      $('byPayment').innerHTML = Object.keys(s.byPaymentMethod||{}).length
+        ? Object.entries(s.byPaymentMethod).map(([k,v]) =>
+            `<div class="report-row"><span class="k">${(PAYMENT_METHODS[k]&&PAYMENT_METHODS[k].name)||k}</span><span class="v">${fmt(v)}</span></div>`).join('')
+        : `<div class="report-row"><span class="k">No data</span></div>`;
+      $('topItems').innerHTML = (s.topItems||[]).length
+        ? s.topItems.map(it => `<div class="report-row"><span class="k">${it.name}</span><span class="v">${it.qty}×</span></div>`).join('')
+        : `<div class="report-row"><span class="k">No data</span></div>`;
+      $('ordersList').innerHTML = orders.length
+        ? orders.map(o => `
+            <div class="order-card" data-id="${o.id}">
+              <div><div class="oc-id">#${o.id}</div><div class="oc-meta">${o.orderType}${o.table?` · Table ${o.table}`:''} · ${(PAYMENT_METHODS[o.payment.method]&&PAYMENT_METHODS[o.payment.method].name)||o.payment.method} · ${new Date(o.createdAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</div></div>
+              <div class="oc-total">${fmt(o.total)}</div>
+            </div>`).join('')
+        : `<div class="report-row"><span class="k">No orders yet</span></div>`;
+      $('ordersList').querySelectorAll('.order-card').forEach(c =>
+        c.addEventListener('click', () => {
+          const o = orders.find(x => x.id === c.dataset.id);
+          if (o) showReceipt(o);
+        }));
+    }
+    $('reportDate').addEventListener('change', loadReports);
+
+    // ---- Init ----
+    async function init() {
+      try { const c = await (await fetch('/api/config')).json(); fibConfigured = !!c.fibConfigured; } catch {}
+      renderCategoryNav(); renderMenu(); renderCart();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        if (customiseModal.classList.contains('show')) closeCustomiser();
+        else if (paymentModal.classList.contains('show')) closePaymentModal();
+        else if ($('receiptModal').classList.contains('show')) $('closeReceipt').click();
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+

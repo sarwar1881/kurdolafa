@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800" role="img" aria-label="Kurdo Lafa restaurant storefront at night">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a0a0a"/>
+      <stop offset="60%" stop-color="#141414"/>
+      <stop offset="100%" stop-color="#1c1c1c"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c9a84c"/>
+      <stop offset="50%" stop-color="#e8d5a8"/>
+      <stop offset="100%" stop-color="#9d7f2e"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8d5a8" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="window" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f4e3b4"/>
+      <stop offset="100%" stop-color="#c9a84c"/>
+    </linearGradient>
+    <radialGradient id="lamp" cx="0.5" cy="0.35" r="0.7">
+      <stop offset="0%" stop-color="#f7ecc9"/>
+      <stop offset="100%" stop-color="#9d7f2e"/>
+    </radialGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+  </defs>
+
+  <!-- Sky / backdrop -->
+  <rect width="1200" height="800" fill="url(#sky)"/>
+  <!-- Stars -->
+  <g fill="#e8d5a8" opacity="0.5">
+    <circle cx="120" cy="90" r="1.6"/><circle cx="300" cy="60" r="1.2"/><circle cx="520" cy="110" r="1.4"/>
+    <circle cx="760" cy="70" r="1.3"/><circle cx="980" cy="120" r="1.6"/><circle cx="1080" cy="60" r="1.1"/>
+    <circle cx="200" cy="160" r="1"/><circle cx="640" cy="150" r="1"/><circle cx="880" cy="180" r="1.2"/>
+  </g>
+
+  <!-- Facade -->
+  <rect x="90" y="180" width="1020" height="470" fill="#111111" stroke="url(#gold)" stroke-width="3"/>
+  <!-- Awning -->
+  <path d="M70 300 L1130 300 L1090 360 L110 360 Z" fill="#0a0a0a" stroke="url(#gold)" stroke-width="3"/>
+  <g fill="#1c1c1c">
+    <path d="M110 360 l70 0 -14 34 -56 0 z"/>
+    <path d="M250 360 l70 0 -14 34 -56 0 z"/>
+    <path d="M390 360 l70 0 -14 34 -56 0 z"/>
+    <path d="M530 360 l70 0 -14 34 -56 0 z"/>
+    <path d="M670 360 l70 0 -14 34 -56 0 z"/>
+    <path d="M810 360 l70 0 -14 34 -56 0 z"/>
+    <path d="M950 360 l70 0 -14 34 -56 0 z"/>
+  </g>
+  <path d="M70 300 L1130 300 L1090 360 L110 360 Z" fill="none" stroke="url(#gold)" stroke-width="1" opacity="0.4"/>
+
+  <!-- Sign glow -->
+  <ellipse cx="600" cy="250" rx="360" ry="70" fill="url(#glow)" filter="url(#soft)"/>
+
+  <!-- Emblem -->
+  <g transform="translate(600,240)">
+    <circle r="52" fill="none" stroke="url(#gold)" stroke-width="2"/>
+    <circle r="46" fill="#0a0a0a"/>
+    <circle r="10" fill="url(#gold)"/>
+    <g stroke="url(#gold)" stroke-width="1.6" stroke-linecap="round" opacity="0.9">
+      <line x1="0" y1="-20" x2="0" y2="-32"/><line x1="0" y1="20" x2="0" y2="32"/>
+      <line x1="-20" y1="0" x2="-32" y2="0"/><line x1="20" y1="0" x2="32" y2="0"/>
+      <line x1="-14" y1="-14" x2="-23" y2="-23"/><line x1="14" y1="-14" x2="23" y2="-23"/>
+      <line x1="-14" y1="14" x2="-23" y2="23"/><line x1="14" y1="14" x2="23" y2="23"/>
+    </g>
+  </g>
+
+  <!-- Restaurant name -->
+  <text x="600" y="150" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif"
+        font-size="72" font-weight="600" fill="url(#gold)" letter-spacing="4">KURDO LAFA</text>
+  <text x="600" y="330" text-anchor="middle" font-family="Georgia, serif"
+        font-size="20" fill="#e8d5a8" letter-spacing="10" opacity="0.85">AUTHENTIC KURDISH CUISINE</text>
+
+  <!-- Left window -->
+  <g>
+    <rect x="150" y="410" width="250" height="200" fill="url(#window)" opacity="0.9" stroke="url(#gold)" stroke-width="3"/>
+    <line x1="275" y1="410" x2="275" y2="610" stroke="#0a0a0a" stroke-width="3"/>
+    <line x1="150" y1="510" x2="400" y2="510" stroke="#0a0a0a" stroke-width="3"/>
+    <!-- silhouette diners -->
+    <g fill="#0a0a0a" opacity="0.55">
+      <circle cx="215" cy="540" r="16"/><rect x="197" y="556" width="36" height="40" rx="8"/>
+      <circle cx="330" cy="540" r="16"/><rect x="312" y="556" width="36" height="40" rx="8"/>
+      <rect x="250" y="575" width="60" height="10" rx="3"/>
+    </g>
+  </g>
+
+  <!-- Right window -->
+  <g>
+    <rect x="800" y="410" width="250" height="200" fill="url(#window)" opacity="0.9" stroke="url(#gold)" stroke-width="3"/>
+    <line x1="925" y1="410" x2="925" y2="610" stroke="#0a0a0a" stroke-width="3"/>
+    <line x1="800" y1="510" x2="1050" y2="510" stroke="#0a0a0a" stroke-width="3"/>
+    <g fill="#0a0a0a" opacity="0.55">
+      <circle cx="865" cy="540" r="16"/><rect x="847" y="556" width="36" height="40" rx="8"/>
+      <circle cx="980" cy="540" r="16"/><rect x="962" y="556" width="36" height="40" rx="8"/>
+      <rect x="900" y="575" width="60" height="10" rx="3"/>
+    </g>
+  </g>
+
+  <!-- Hanging lamps -->
+  <g>
+    <line x1="480" y1="360" x2="480" y2="410" stroke="url(#gold)" stroke-width="2"/>
+    <ellipse cx="480" cy="420" rx="22" ry="18" fill="url(#lamp)"/>
+    <line x1="720" y1="360" x2="720" y2="410" stroke="url(#gold)" stroke-width="2"/>
+    <ellipse cx="720" cy="420" rx="22" ry="18" fill="url(#lamp)"/>
+  </g>
+
+  <!-- Entrance -->
+  <rect x="500" y="440" width="200" height="210" fill="#0a0a0a" stroke="url(#gold)" stroke-width="3"/>
+  <rect x="512" y="452" width="176" height="198" fill="#141414"/>
+  <rect x="512" y="452" width="88" height="198" fill="url(#window)" opacity="0.35"/>
+  <rect x="600" y="452" width="88" height="198" fill="url(#window)" opacity="0.25"/>
+  <line x1="600" y1="452" x2="600" y2="650" stroke="url(#gold)" stroke-width="2"/>
+  <circle cx="588" cy="555" r="4" fill="url(#gold)"/>
+  <circle cx="612" cy="555" r="4" fill="url(#gold)"/>
+
+  <!-- Steps -->
+  <rect x="470" y="650" width="260" height="14" fill="#1c1c1c" stroke="url(#gold)" stroke-width="1"/>
+  <rect x="450" y="664" width="300" height="14" fill="#161616" stroke="url(#gold)" stroke-width="1"/>
+
+  <!-- Pavement -->
+  <rect x="0" y="650" width="1200" height="150" fill="#0d0d0d"/>
+  <g stroke="#1c1c1c" stroke-width="2">
+    <line x1="0" y1="700" x2="1200" y2="700"/>
+    <line x1="200" y1="678" x2="150" y2="800"/>
+    <line x1="500" y1="678" x2="480" y2="800"/>
+    <line x1="800" y1="678" x2="820" y2="800"/>
+    <line x1="1050" y1="678" x2="1120" y2="800"/>
+  </g>
+
+  <!-- Planters -->
+  <g>
+    <rect x="430" y="612" width="30" height="40" fill="#1c1c1c" stroke="url(#gold)" stroke-width="1.5"/>
+    <path d="M445 612 q-16 -30 -6 -46 q10 20 6 46 q16 -34 22 -40 q-6 24 -22 40Z" fill="#2a2a2a"/>
+    <rect x="740" y="612" width="30" height="40" fill="#1c1c1c" stroke="url(#gold)" stroke-width="1.5"/>
+    <path d="M755 612 q-16 -30 -6 -46 q10 20 6 46 q16 -34 22 -40 q-6 24 -22 40Z" fill="#2a2a2a"/>
+  </g>
+</svg>
